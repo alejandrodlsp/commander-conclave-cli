@@ -38,9 +38,12 @@ export default {
         DeckTable
     },
     computed: {
-        ...mapGetters("room", ["getMessages"]),
+        ...mapGetters("room", ["getMessages", "getUsers"]),
         messages() {
             return this.getMessages;
+        },
+        users() {
+            return this.getUsers;
         }
     },
     created() {
@@ -48,18 +51,10 @@ export default {
     },
     data() {
         return {
-            users: [
-                {
-                    username: "Alejandrodlsp"
-                },
-                {
-                    username: "Juan Bueno R"
-                }
-            ]
         }
     },
     methods: {
-        ...mapActions("room", ["sendMessage", 'bindRoom']),
+        ...mapActions("room", ["sendMessage", 'bindRoom', 'unbindRoom']),
 
         send(message) {
             this.sendMessage(message);

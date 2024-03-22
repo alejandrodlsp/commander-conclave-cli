@@ -11,13 +11,22 @@ export default {
   
     getters: {
         getMessages: (state) => { return state.messages },
-        getActiveUsers: (state) => { return state.activeUsers }
+        getUsers: (state) => { return state.activeUsers }
     },
 
     actions: {
         bindRoom({ commit }, roomId) {
             commit('setCurrentRoomId', roomId);
             connectToRoom(roomId);
+
+            socket.on("disconnect", () => {
+                socket.emit("TS_LEAVE_ROOM")
+            }),
+
+            socket.on("TC_SYNC_ROOM", (roomData) => {
+                console.log(roomData)
+                commit('setUsers', roomData.users);
+            }),
 
             socket.on("TC_USER_JOINED_ROOM", (user) => {
                 commit('addActiveUser', user);
@@ -35,6 +44,7 @@ export default {
         unbindRoom() {
             disconnectRoom();
         },
+
         sendMessage({ commit }, message) {
             socket.emit('TS_CHAT_MESSAGE', message);
             commit('addMessage', {
@@ -54,6 +64,9 @@ export default {
         },
         addMessage(state, message) {
             state.messages.push(message);
+        },
+        setUsers(state, users) {
+            state.activeUsers = users;
         },
         addActiveUser(state, user) {
             state.activeUsers.push(user);
