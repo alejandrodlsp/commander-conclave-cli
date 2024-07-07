@@ -36,6 +36,9 @@
                             Type
                         </th>
                         <th scope="col" class="px-6 py-3">
+                            Players
+                        </th>
+                        <th scope="col" class="px-6 py-3">
                             Status
                         </th>
                         <th scope="col" class="px-6 py-3">
@@ -43,14 +46,14 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="filteredRooms.length > 0">
                     <tr 
                         class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600"
                         v-for="room in filteredRooms"
                         :key="room.name"
                     >
                         <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            <img class="w-10 h-10 rounded-full" src="" alt="Jese image">
+                            <img class="w-10 h-10 rounded-full" src="https://b.thumbs.redditmedia.com/1UCbc0UOhTcu8Yo_xAQUW7tp7CpAiWDVNJGEXLWXvYU.png" alt="Jese image">
                             <div class="ps-3">
                                 <div class="text-base font-semibold">{{ room.name }}</div>
                                 <div class="font-normal text-gray-500">{{ room.max_players }} players max.</div>
@@ -60,6 +63,9 @@
                             Public
                         </td>
                         <td class="px-6 py-4">
+                            {{ room.roomUsers?.length }}/{{ room.max_players }}
+                        </td>
+                        <td class="px-6 py-4">
                             <div class="flex items-center">
                                 <div class="h-2.5 w-2.5 rounded-full me-2" :class="statusClass(room)"></div> {{ room.status }}
                             </div>
@@ -67,10 +73,16 @@
                         <td class="px-6 py-4">
                             <p
                                 @click.prevent="onJoinRoom(room)"
-                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+                                :class="{'text-gray-600 hover:no-underline cursor-default': !room.canJoin}"
                             >Join Room</p>
                         </td>
                     </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr >
+                        <td colspan="12" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No rooms found.</td>
+                    </tr>        
                 </tbody>
             </table>
         </div>
@@ -108,6 +120,7 @@ export default {
 
         addNewRoom(room) {
             this.rooms.push(room);
+            this.onJoinRoom(room)
         },
 
         statusClass(room) {

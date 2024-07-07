@@ -1,6 +1,5 @@
 <template>
-
-    <div class="fixed inset-0 z-[999] grid h-screen w-screen bg-opacity-60 place-items-center bg-black backdrop-blur-sm transition-opacity duration-300"
+    <div class="fixed inset-0 z-[998] grid h-screen w-screen bg-opacity-60 place-items-center bg-black backdrop-blur-sm transition-opacity duration-300"
         :class="{ 'bg-opacity-0 hidden pointer-events-none': !show, 'bg-opacity-60 pointer-events-auto': show }">
         <div
             class="relative m-4 w-2/5 min-w-[40%] max-w-[40%] rounded-lg bg-white font-sans text-base font-light leading-relaxed text-blue-gray-500 antialiased shadow-2xl">
@@ -26,18 +25,30 @@
                 <form class="p-4 md:p-5">
                     <div class="grid gap-4 mb-4 grid-cols-2">
                         <div class="col-span-2">
-                            <label for="name"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                            <input type="text" name="name" id="name" v-model="name"
+                            <label class="block mb-2 text-sm font-medium dark:text-red-500" :class="{ 'text-red-700' : name_error }">Room name</label>
+                            <input
+                                type="text" 
+                                name="name"
+                                id="name"
+                                v-model="name"
+                                required=""
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="Type product name" required="">
+                                :class="{ 'bg-red-50 border border-red-500 text-red-900 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500' : name_error }" 
+                            >
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ name_error }}</p>
                         </div>
-                        <div class="col-span-2 sm:col-span-1">
-                            <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Max
-                                Players</label>
-                            <input type="number" name="price" id="price" min="0" step="1" max="6" v-model="max_players"
+                        <div class="col-span-2">
+                            <label class="block mb-2 text-sm font-medium dark:text-red-500" :class="{ 'text-red-700' : players_error }">Max Players</label>
+                            <input
+                                type="number" 
+                                name="players"
+                                id="players"
+                                min="0" step="1" max="6" v-model="max_players"
+                                required=""
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="4" required="">
+                                :class="{ 'bg-red-50 border border-red-500 text-red-900 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500' : players_error }" 
+                            >
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ players_error }}</p>
                         </div>
                         <div class="col-span-2">
                             <label for="description"
@@ -69,6 +80,7 @@
 <script>
 import { securedHttp } from '@/axios';
 import { mapMutations } from 'vuex';
+
 export default {
     props: {
         show: {
@@ -80,17 +92,28 @@ export default {
         return {
             name: 'New Room',
             max_players: 4,
-            description: 'New MTG room'
+            description: 'New MTG room',
+            name_error: null,
+            players_error: null
         }
     },
     methods: {
         ...mapMutations('alerts', ['setGlobalAlert']),
 
         close() {
+            this.name = 'New Room'
+            this.max_players = 4
+            this.description = 'New MTG room'
+            this.name_error = null
+            this.players_error = null
             this.$emit('close')
         },
 
         createNewRoom() {
+            if(!this.validateForm()) {
+                return;
+            }
+
             const data = {
                 name: this.name,
                 max_players: this.max_players,
@@ -102,9 +125,31 @@ export default {
                     this.$emit('created', res.data)
                 })
                 .catch(err => {
+                    this.name_error = err.response.data.message
                     this.setGlobalAlert(err.response.data.message)
                 })
 
+        },
+
+        validateForm() {
+            this.name_error = null
+            this.players_error = null
+            if(this.name.length < 3) {
+                this.name_error = 'Room name must be at least 3 characters long'
+            }
+            if(this.name.length > 25) {
+                this.name_error = 'Room name cannot exceed 25 characters'
+            }
+            if(this.max_players > 4) {
+                this.players_error = 'Max players cannot exceed 4'
+            }
+            if(this.max_players < 2) {
+                this.players_error = 'Please select more than 1 player'
+            }
+
+            if(this.name_error) { return false }
+            if(this.players_error) { return false }
+            return true;
         }
     }
 }

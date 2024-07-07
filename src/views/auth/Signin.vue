@@ -2,8 +2,8 @@
   <section class="bg-gray-50 dark:bg-gray-900">
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-        <img class="w-8 h-8 mr-2"
-          src="https://play-lh.googleusercontent.com/BNs0s9QxyfIK4pbBUmX4LE0u_CM34WIVZftYJp1KdhAo8Sby1bCsNteKjl6YPDkg-AY"
+        <img class="h-8 mr-2"
+          src="https://upload.wikimedia.org/wikipedia/en/thumb/d/dd/Modern_Times_Group_logo.svg/1200px-Modern_Times_Group_logo.svg.png"
           alt="logo">
         Commander Conclave
       </a>

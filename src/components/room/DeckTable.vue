@@ -1,5 +1,6 @@
 <template>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
+        <button class="btn btn-primary" @click="selectNewDeck">Select Deck</button>
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
                 <tr>
@@ -56,3 +57,17 @@
         </table>
     </div>
 </template>
+
+<script>
+import { mapActions } from 'vuex';
+export default {
+    name: "DeckTable",
+    methods: {
+        ...mapActions("room", ["selectDeck"]),
+        selectNewDeck() {
+            console.log('select deck 12');
+            this.selectDeck(12);
+        }
+    }
+}
+</script>
